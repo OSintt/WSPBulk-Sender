@@ -34,6 +34,7 @@ wbm
   .start()
   .then(async () => {
     const phones = await getPhones();
+    console.log(phones);
     const message = `Estimado(a) cliente {{nombre}}
     Este comunicado es para informarle que mantiene un valor pendiente de pago en instancia
     EXTRAJUDICIAL, relacionado al servicio FIJO - MOVIL prestado/s por la CNT EP.
