@@ -6,8 +6,8 @@ import * as fs from "fs/promises";
 const filePath = path.join(__dirname, "xlsx");
 
 class Phone {
-  telefono: string;
-  nombre: string;
+  phone: string;
+  name: string;
 }
 
 const getPhones = async (): Promise<Phone[]> => {
@@ -21,8 +21,8 @@ const getPhones = async (): Promise<Phone[]> => {
 
     sheetData.forEach((row: any) => {
       const newPhone = new Phone();
-      newPhone.telefono = row['Numero'];
-      newPhone.nombre = row['Nombre'];
+      newPhone.phone = row['Numero'];
+      newPhone.name = row['Nombre'];
       phones.push(newPhone);
     });
   }
