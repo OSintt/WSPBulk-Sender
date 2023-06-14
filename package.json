@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "start": "node app.js",
+    "build": "tsc -w",
+    "dev": "nodemon dist/app.js"
+  },
+  "dependencies": {
+    "wbm": "^1.1.16",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.1",
+    "nodemon": "^2.0.22"
+  },
+  "name": "wsp-bulk-sender",
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
