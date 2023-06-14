@@ -14,24 +14,26 @@ const getPhones = async (): Promise<Phone[]> => {
   const phones: Phone[] = [];
   const files = await fs.readdir(filePath);
   for (let file of files) {
+    console.log(file);
     const workbook = XLSX.readFile(path.join(filePath, file));
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     const sheetData = XLSX.utils.sheet_to_json(worksheet);
 
     sheetData.forEach((row: any) => {
       const newPhone = new Phone();
-      newPhone.telefono = row[1];
-      newPhone.nombre = row[0];
+      newPhone.telefono = row['Numero'];
+      newPhone.nombre = row['Nombre'];
       phones.push(newPhone);
     });
   }
+  
   return phones;
 };
 
 wbm
   .start()
   .then(async () => {
-    const phones = getPhones();
+    const phones = await getPhones();
     const message = `Estimado(a) cliente {{nombre}}
     Este comunicado es para informarle que mantiene un valor pendiente de pago en instancia
     EXTRAJUDICIAL, relacionado al servicio FIJO - MOVIL prestado/s por la CNT EP.
