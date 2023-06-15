@@ -1,14 +1,13 @@
-import * as wbm from "wbm";
+import makeWASocket, { DisconnectReason, useMultiFileAuthState } from '@whiskeysockets/baileys'
+import { Boom } from '@hapi/boom';
 import * as XLSX from "xlsx";
 import * as path from "path";
 import * as fs from "fs/promises";
-
+import { config } from 'dotenv';
+import campaign from './campaign';
+import { Phone } from './types/types';
 const filePath = path.join(__dirname, "xlsx");
-
-class Phone {
-  phone: string;
-  name: string;
-}
+config();
 
 const getPhones = async (): Promise<Phone[]> => {
   const phones: Phone[] = [];
@@ -30,27 +29,28 @@ const getPhones = async (): Promise<Phone[]> => {
   return phones;
 };
 
-wbm
-  .start()
-  .then(async () => {
-    const phones = await getPhones();
-    console.log(phones);
-    const message = `Estimado(a) cliente {{nombre}}
-    Este comunicado es para informarle que mantiene un valor pendiente de pago en instancia
-    EXTRAJUDICIAL, relacionado al servicio FIJO - MOVIL prestado/s por la CNT EP.
-    El no pago de los valores antes detallados dará derecho a la Corporación Nacional de Telecomunicaciones
-    CNT-E.P., a continuar con el PROCESO DE COBRO MEDIANTE LA EJECUCIÓN COACTIVA de acuerdo con la
-    normativa legal vigente, misma que permite interponer medidas cautelares como el Bloqueo de Cuentas
-    bancarias y demás.
-    Le solicitamos se ACERQUE a la brevedad posible a cancelar sus obligaciones en las oficinas de la
-    CORPORACIÓN NACIONAL DE TELECOMUNICACIONES E.P., en la agencia que se encuentre más cercana a
-    su domicilio, estas se encuentran ubicadas en:
-    ●
-    Quevedo: Av. June Guzmán Y Séptima, esquina Piso 1 (lunes - viernes, 08:00 a 16:00)
-    Babahoyo: Juan X Marcos entre Eloy Alfaro Y Rocafuerte, planta baja (lunes - viernes, 08:00 a 16:00)
-    Agencias en las cuales podrá acceder a diferentes formas de pago, entre esas el pago diferido de sus
-    obligaciones mediante su TARJETA DE CRÉDITO preferida.`;
-    await wbm.send(phones, message);
-    await wbm.end();
-  })
-  .catch((e) => console.log(e));
+
+
+async function connectToWhatsApp () {
+    const { state, saveCreds } = await useMultiFileAuthState("auth_info_baileys");
+    const sock = makeWASocket({ auth: state, printQRInTerminal: true });
+    sock.ev.on("creds.update", saveCreds);
+    sock.ev.on('connection.update', async (update) => {
+        const { connection, lastDisconnect } = update
+        if(connection === 'close') {
+            const shouldReconnect = (lastDisconnect.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut
+            console.log('connection closed due to ', lastDisconnect.error, ', reconnecting ', shouldReconnect)
+            // reconnect if not logged out
+            if(shouldReconnect) {
+                connectToWhatsApp()
+            }
+        } else if(connection === 'open') {
+            console.log('opened connection');
+            campaign(sock, await getPhones(), 2);
+        }
+    })
+}
+
+connectToWhatsApp()
+
+

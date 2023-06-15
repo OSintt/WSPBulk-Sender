@@ -5,7 +5,14 @@
     "dev": "nodemon dist/index.js"
   },
   "dependencies": {
+    "@hapi/boom": "^10.0.1",
+    "@whiskeysockets/baileys": "github:OSintt/Baileys#patch-1",
+    "dotenv": "^16.1.4",
+    "mongoose": "^7.3.0",
+    "qrcode-terminal": "^0.12.0",
     "wbm": "^1.1.16",
+    "whatsapp-web.js": "^1.21.0",
+    "wwebjs-mongo": "^1.1.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
