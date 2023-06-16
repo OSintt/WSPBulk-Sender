@@ -3,4 +3,4 @@
 .env
 pnpm-lock.yaml
 /auth_info_baileys
-/text
+src/text
