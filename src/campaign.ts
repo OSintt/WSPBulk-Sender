@@ -21,7 +21,7 @@ const campaign = async (client: any, phones: Phone[], interval: number) => {
     };
   });
 
-  const message = await fs.readFile(path.join(__dirname, 'text'), 'utf8');
+  const message = await fs.readFile(path.join(__dirname, 'text', 'text.txt'), 'utf8');
   let i = 0;
   let sended = [];
   let errs = [];
