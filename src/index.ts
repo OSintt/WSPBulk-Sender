@@ -13,11 +13,6 @@ import * as path from "path";
 import * as fs from "fs/promises";
 import Provincia from "./models/Provincia";
 
-const cleanDB = async () => {
-  
-};
-
-cleanDB();
 const saveTexts = async () => {
   const client: ClientType = await Client.findOne({ nombre: "NM" }).populate({
     path: "provincias",
@@ -46,7 +41,7 @@ const saveTexts = async () => {
     }
   }
 };
-/*
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -149,6 +144,6 @@ async function connectToWhatsApp() {
     }
   });
 }
-*/
-//saveTexts();
+
+saveTexts();
 //connectToWhatsApp();
