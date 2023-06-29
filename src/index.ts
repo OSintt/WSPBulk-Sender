@@ -12,7 +12,7 @@ import Client from "./models/Client";
 import * as path from "path";
 import * as fs from "fs/promises";
 import Provincia from "./models/Provincia";
-
+import chatbot from "./chatbot";
 const saveTexts = async () => {
   const client: ClientType = await Client.findOne({ nombre: "NM" }).populate({
     path: "provincias",
@@ -22,7 +22,7 @@ const saveTexts = async () => {
       model: NumberModel,
     },
   });
-  console.log(client.provincias.map((p) => p.numbers.length));
+  console.log(client.provincias.map((p) => p.name));
   const files = await fs.readdir(path.join(__dirname, "/text"));
   for (let file of files) {
     const fileBaseName = file.replace(/\.[^/.]+$/, "");
@@ -53,14 +53,19 @@ const getPhones = async (params: any[]) => {
     model: NumberModel,
   });
   if (province) {
-    const phones: Phone[] = province.numbers;
+    const phones: Phone[] = province.numbers.filter((p) => !p.enviado);
+    console.log(phones.length);
     return { phones: phones.slice(params[1][0], params[1][1]), province };
   }
   return null;
 };
 
 const getParams = async (): Promise<any[] | null> => {
-  const clients = await Client.find().populate("provincias");
+  const clients = await Client.find().populate({
+    path: "provincias",
+    model: Provincia,
+    populate: { path: "numbers", model: NumberModel },
+  });
   let client;
   let province;
   let slice: Number[];
@@ -83,16 +88,18 @@ const getParams = async (): Promise<any[] | null> => {
   console.log(
     "Ingresa la provincia del cliente a la que deseas hacer campaña:"
   );
-  client.provincias.forEach(({ name }, index) => {
-    console.log(`${index + 1}. ${name}`);
+  client.provincias.forEach(({ name, numbers }, index) => {
+    console.log(
+      `${index + 1}. ${name} | ${numbers.filter(n => !n.enviado).length} números disponibles`
+    );
   });
   const answer1 = await new Promise<number>((resolve) => {
     rl.question(`Ingrese el número de la opción seleccionada: `, (answer) => {
       resolve(parseInt(answer) - 1);
     });
   });
-  if (answer1 >= 0 && answer1 < client.provinces.length) {
-    const selectedOption = client.provinces[answer1];
+  if (answer1 >= 0 && answer1 < client.provincias.length) {
+    const selectedOption = client.provincias[answer1];
     console.log(`Ha seleccionado: ${selectedOption.name}`);
     province = selectedOption;
   } else {
@@ -100,7 +107,9 @@ const getParams = async (): Promise<any[] | null> => {
   }
   const answer2 = await new Promise<string>((resolve) => {
     rl.question(
-      `Ingrese el split (inicio final) (${province.numbers.length} datos disponibles): `,
+      `Ingrese el split (inicio final) (${
+        province.numbers.filter((p) => !p.enviado).length
+      } datos disponibles): `,
       (answer) => {
         resolve(answer);
       }
@@ -140,10 +149,13 @@ async function connectToWhatsApp() {
       }
     } else if (connection === "open") {
       console.log("opened connection");
-      campaign(sock, await getPhones(await getParams()), 6);
+      campaign(sock, await getPhones(await getParams()), 60);
     }
+    /*sock.ev.on("messages.upsert", ({ messages }: any) => {
+      chatbot(messages[0], sock);
+    });*/
   });
 }
 
-saveTexts();
-//connectToWhatsApp();
+//saveTexts();
+connectToWhatsApp();

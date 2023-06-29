@@ -10,6 +10,12 @@ export class Phone {
   causa?: string;
 }
 
+export interface Message extends Document {
+  author: NumberModel;
+  content: string;
+  date: Date;
+}
+
 export interface Province extends Document {
   numbers: NumberModel[];
   name: string;
@@ -31,6 +37,8 @@ export interface NumberModel extends Document {
   eliminar?: boolean;
   email?: string;
   causa?: string;
+  enviado: boolean;
+  mensajes: Message[];
 }
 
 export interface Params {

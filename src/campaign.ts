@@ -1,4 +1,5 @@
 import { Params } from "./types/types";
+import NumberModel from "./models/Number";
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const campaign = async (client: any, params: Params, interval: number) => {
   const { phones, province } = params;
@@ -19,19 +20,26 @@ const campaign = async (client: any, params: Params, interval: number) => {
   });
   console.log(
     "expected execution time:",
-    (phones.length * interval) / 60,
-    "minutes"
+    (phones.length * (interval + 3)) / 60,
+    "minutes", phones.length, 'números'
   );
   for (let i = 0; i < updatedPhones.length; i++) {
-    const phone = updatedPhones[i];
+    const phone: any = updatedPhones[i];
+    const timeOut = i === 100 ? 300 : interval;
     try {
       await client.sendMessage(phone.phone + "@s.whatsapp.net", {
-        text: province.message.replace("{{nombre}}", phone.nombre),
+       text: province.message.replace("{{nombre}}", phone._doc.nombre),
       });
-      console.log(phone.phone);
-      await delay(interval * 1000);
+      
+      const foundPhone = await NumberModel.findOne({
+        cedula: phone._doc.cedula,
+      });
+      foundPhone.enviado = true;
+      const savedPhone = await foundPhone.save();
+      console.log(savedPhone.telefono, savedPhone.enviado, i);
+      await delay(timeOut * 1000);
     } catch (e) {
-      console.error("failed", phone.nombre, phone.phone, e);
+      console.error("failed", phone._doc.nombre, phone.phone, e);
     }
   }
 };

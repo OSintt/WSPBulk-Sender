@@ -20,6 +20,14 @@ const NumberSchema = new Schema<NumberModel>({
     type: Boolean,
     default: false,
   },
+  mensajes: [{
+    type: Types.ObjectId,
+    ref: 'Message'
+  }],
+  enviado: {
+    default: false,
+    type: Boolean
+  },
   email: String,
   causa: String,
 });
