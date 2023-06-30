@@ -1,15 +1,5 @@
 import { Document, Types } from "mongoose";
 
-export class Phone {
-  nombre: string;
-  cedula: string;
-  fecha_defuncion?: Date;
-  telefono: string;
-  eliminar?: boolean;
-  email?: string;
-  causa?: string;
-}
-
 export interface Message extends Document {
   author: NumberModel;
   content: string;
@@ -42,6 +32,6 @@ export interface NumberModel extends Document {
 }
 
 export interface Params {
-  phones: Phone[];
+  phones: NumberModel[];
   province: Province;
 }

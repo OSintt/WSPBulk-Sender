@@ -6,6 +6,7 @@ const NumberSchema = new Schema<NumberModel>({
   cedula: {
     type: String,
     required: true,
+    unique: true
   },
   provincia: {
     type: Types.ObjectId,
@@ -15,6 +16,7 @@ const NumberSchema = new Schema<NumberModel>({
   telefono: {
     type: String,
     required: true,
+    unique: true,
   },
   eliminar: {
     type: Boolean,

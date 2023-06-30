@@ -5,15 +5,15 @@ import makeWASocket, {
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import campaign from "./campaign";
-import { Phone, Cliente as ClientType } from "./types/types";
+import { NumberModel as NumberType, Cliente as ClientType } from "./types/types";
 import * as readline from "readline";
 import NumberModel from "./models/Number";
 import Client from "./models/Client";
 import * as path from "path";
 import * as fs from "fs/promises";
 import Provincia from "./models/Provincia";
-import chatbot from "./chatbot";
-const saveTexts = async () => {
+
+/*const saveTexts = async () => {
   const client: ClientType = await Client.findOne({ nombre: "NM" }).populate({
     path: "provincias",
     model: Provincia,
@@ -40,7 +40,7 @@ const saveTexts = async () => {
       console.log(province);
     }
   }
-};
+};*/
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -53,7 +53,7 @@ const getPhones = async (params: any[]) => {
     model: NumberModel,
   });
   if (province) {
-    const phones: Phone[] = province.numbers.filter((p) => !p.enviado);
+    const phones: NumberType[] = province.numbers.filter((p) => !p.enviado);
     console.log(phones.length);
     return { phones: phones.slice(params[1][0], params[1][1]), province };
   }
