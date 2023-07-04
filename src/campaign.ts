@@ -15,19 +15,21 @@ const campaign = async (client: any, params: Params, interval: number) => {
     const phone: any = phones[i];
     const timeOut = i === 100 ? 300 : interval;
     try {
+      if (i !== 0) {
+        await delay(timeOut * 1000);
+      }
       await client.sendMessage(phone.telefono + "@s.whatsapp.net", {
         text: province.message.replace("{{nombre}}", `${phone.nombre} con la cédula ${phone.cedula}`),
       });
 
       const foundPhone = await NumberModel.findOne({
-        cedula: phone._doc.cedula,
+        cedula: phone.cedula,
       });
       foundPhone.enviado = true;
       const savedPhone = await foundPhone.save();
       console.log(savedPhone.telefono, savedPhone.enviado, i);
-      await delay(timeOut * 1000);
     } catch (e) {
-      console.error("failed", phone._doc.nombre, phone.phone, e);
+      console.error("failed", phone.nombre, phone.telefono, e);
     }
   }
 };

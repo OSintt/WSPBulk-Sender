@@ -9,38 +9,7 @@ import { NumberModel as NumberType, Cliente as ClientType } from "./types/types"
 import * as readline from "readline";
 import NumberModel from "./models/Number";
 import Client from "./models/Client";
-import * as path from "path";
-import * as fs from "fs/promises";
 import Provincia from "./models/Provincia";
-
-/*const saveTexts = async () => {
-  const client: ClientType = await Client.findOne({ nombre: "NM" }).populate({
-    path: "provincias",
-    model: Provincia,
-    populate: {
-      path: "numbers",
-      model: NumberModel,
-    },
-  });
-  console.log(client.provincias.map((p) => p.name));
-  const files = await fs.readdir(path.join(__dirname, "/text"));
-  for (let file of files) {
-    const fileBaseName = file.replace(/\.[^/.]+$/, "");
-    console.log(fileBaseName);
-    const content = await fs.readFile(
-      path.join(__dirname, "/text", file),
-      "utf-8"
-    );
-    const province = client.provincias.find(
-      (p) => p.name.toLowerCase() === fileBaseName
-    );
-    if (province) {
-      province.message = content;
-      await province.save();
-      console.log(province);
-    }
-  }
-};*/
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -151,11 +120,7 @@ async function connectToWhatsApp() {
       console.log("opened connection");
       campaign(sock, await getPhones(await getParams()), 60);
     }
-    /*sock.ev.on("messages.upsert", ({ messages }: any) => {
-      chatbot(messages[0], sock);
-    });*/
   });
 }
 
-//saveTexts();
 connectToWhatsApp();
